@@ -49,16 +49,16 @@ class Actor {
   }
 
   get type() {
-    return 'actor';
+    return "actor";
   }
 
   isIntersect(actor) {
     if (actor && actor instanceof Actor) {
       if (actor === this) return false;
-      return actor.left < this.left &&
-        actor.right > this.right &&
-        actor.top < this.top &&
-        actor.bottom > this.bottom
+      return actor.left <= this.left &&
+        actor.right >= this.right &&
+        actor.top <= this.top &&
+        actor.bottom >= this.bottom
         ? false
         : true;
     } else {
@@ -100,7 +100,7 @@ class Level {
   constructor(grid, actors) {
     this.grid = grid;
     this.actors = actors;
-    this.player = { type: 'player' };
+    this.player = { type: "player" };
     this.height = grid.length;
     this.width = grid[0].length;
     this.status = null;
@@ -122,36 +122,58 @@ class Level {
   obstacleAt(pos, size) {
     let obstacle = undefined;
     if (pos instanceof Vector && size instanceof Vector) {
-        this.grid.forEach((row, index) => {
-            obstacle = row.find((col, index) => {
-                return (col != undefined && (col[pos.x] || col[pos.x + size.x])) ? this.grid[pos.x] : undefined
-            });
+      this.grid.forEach((row, index) => {
+        obstacle = row.find((col, index) => {
+          return col != undefined && (col[pos.x] || col[pos.x + size.x])
+            ? this.grid[pos.x]
+            : undefined;
         });
+      });
 
-        if (this.height < pos.y + size.y) obstacle = 'lava';
-        if (this.width < pos.x + size.x) obstacle = 'wall';
-        if ((this.height - (pos.y + size.y)) < 0) obstacle = 'wall';
-        if ((this.width - (pos.x + size.x)) < 0) obstacle = 'wall';
+      if (this.height < pos.y + size.y) obstacle = "lava";
+      if (this.width < pos.x + size.x) obstacle = "wall";
+      if (this.height - (pos.y + size.y) < 0) obstacle = "wall";
+      if (this.width - (pos.x + size.x) < 0) obstacle = "wall";
 
-        return obstacle;
+      return obstacle;
     } else {
       throw new Error("Не является объектом Vector");
     }
   }
 
   removeActor(actor) {
-      this.grid.forEach(row => row.forEach((col, index) => {
-                if (col == actor.type) col.splice(index, 1);
-            })
-        );
+    this.grid.forEach(row =>
+      row.forEach((col, index) => {
+        if (col == actor.type) col.splice(index, 1);
+      })
+    );
   }
 
   noMoreActors(type) {
-    return !this.grid.find(row => row.find((col) => col == type));
+    return !this.actors.find(item => item.type == type);
   }
 
-  playerTouched() {
+  playerTouched(typeObstacle, objCoin) {
+      //console.log(objCoin);
+    if (this.status) {
+      return false;
+    }
 
+    if (typeObstacle == "lava" || typeObstacle == "fireball") {
+      this.status = "lost";
+    }
+
+    if (typeObstacle == "coin" && objCoin.prototype.type == 'actor') {
+      const index = this.actors.indexOf(objCoin);
+      this.actors.splice(index, 1);
+    }
+
+
+    if (this.noMoreActors('coin')) this.status = 'won';
+
+    // if (!this.actors.find(item => item.type == 'coin' )) {
+    //     this.status = 'won';
+    // }
   }
 }
 
@@ -171,8 +193,8 @@ const fireball = new Actor();
 
 const level = new Level(grid, [goldCoin, bronzeCoin, player, fireball]);
 
-// level.playerTouched("coin", goldCoin);
-// level.playerTouched("coin", bronzeCoin);
+ level.playerTouched("coin", goldCoin);
+ level.playerTouched("coin", bronzeCoin);
 
 if (level.noMoreActors("coin")) {
   console.log("Все монеты собраны");
@@ -185,6 +207,7 @@ if (obstacle) {
 }
 
 const otherActor = level.actorAt(player);
+console.log(otherActor); 
 if (otherActor === fireball) {
   console.log("Пользователь столкнулся с шаровой молнией");
 }
