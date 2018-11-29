@@ -6,16 +6,22 @@ class Vector {
     this.y = y;
   }
   plus(vector) {
-    if (vector instanceof Vector) {
-      return new Vector(this.x + vector.x, this.y + vector.y);
-    } else {
+    //   if (vector instanceof Vector) {
+    //     return new Vector(this.x + vector.x, this.y + vector.y);
+    //   } else {
+    //     throw new Error("Можно прибавлять к вектору только вектор типа Vector");
+    //   }
+    // }
+    // times(multiplier) {
+    //   return new Vector(this.x * multiplier, this.y * multiplier);
+    // }
+
+
+    // исправление1 
+    if (vector! instanceof Vector) {
       throw new Error("Можно прибавлять к вектору только вектор типа Vector");
-    }
+    } return new Vector(this.x + vector.x, this.y + vector.y);
   }
-  times(multiplier) {
-    return new Vector(this.x * multiplier, this.y * multiplier);
-  }
-}
 
 // const start = new Vector(30, 50);
 // const moveTo = new Vector(5, 10);
@@ -25,46 +31,65 @@ class Vector {
 // console.log(`Текущее расположение: ${finish.x}:${finish.y}`);
 
 class Actor {
-  constructor(pos, size, speed) {
-    this.pos = pos || new Vector(0, 0);
-    this.size = size || new Vector(1, 1);
-    this.speed = speed || new Vector(0, 0);
-  }
-  act() {}
+  // constructor(pos, size, speed) {
+  //   this.pos = pos || new Vector(0, 0);
+  //   this.size = size || new Vector(1, 1);
+  //   this.speed = speed || new Vector(0, 0);
+  // }
 
-  get left() {
-    return this.pos.x;
-  }
-
-  get top() {
-    return this.pos.y;
+  // исправление2
+  constructor(pos = new Vector(0, 0, size = new Vector(1, 1), speed = new Vector(0, 0)){
+    this.pos = pos;
+    this.size = size;
+    this.speed = speed;
   }
 
-  get right() {
-    return this.pos.x + this.size.x;
-  }
+  act() { }
 
-  get bottom() {
-    return this.pos.y + this.size.y;
-  }
+get left() {
+  return this.pos.x;
+}
 
-  get type() {
-    return "actor";
-  }
+get top() {
+  return this.pos.y;
+}
 
-  isIntersect(actor) {
-    if (actor && actor instanceof Actor) {
-      if (actor === this) return false;
-      return actor.left <= this.left &&
-        actor.right >= this.right &&
-        actor.top <= this.top &&
-        actor.bottom >= this.bottom
-        ? false
-        : true;
-    } else {
-      throw new Error("Не является экземпляром класса Actor");
-    }
+get right() {
+  return this.pos.x + this.size.x;
+}
+
+get bottom() {
+  return this.pos.y + this.size.y;
+}
+
+get type() {
+  return "actor";
+}
+
+isIntersect(actor) {
+  //   if (actor && actor instanceof Actor) {
+  //     if (actor === this) return false;
+  //     return actor.left <= this.left &&
+  //       actor.right >= this.right &&
+  //       actor.top <= this.top &&
+  //       actor.bottom >= this.bottom
+  //       ? false
+  //       : true;
+  //   } else {
+  //     throw new Error("Не является экземпляром класса Actor");
+  //   }
+  // }
+
+  // исправление3
+  if (actor! instanceof Actor) {
+    throw new Error("Не является экземпляром класса Actor");
   }
+  if (actor === this) return true;
+  if (actor.left >= this.left &&
+    actor.right <= this.right &&
+    actor.top >= this.top &&
+    actor.bottom >= this.bottom)
+    return true;
 }
 
 // const items = new Map();
@@ -154,7 +179,7 @@ class Level {
   }
 
   playerTouched(typeObstacle, objCoin) {
-      //console.log(objCoin);
+    //console.log(objCoin);
     if (this.status) {
       return false;
     }
@@ -193,8 +218,8 @@ const fireball = new Actor();
 
 const level = new Level(grid, [goldCoin, bronzeCoin, player, fireball]);
 
- level.playerTouched("coin", goldCoin);
- level.playerTouched("coin", bronzeCoin);
+level.playerTouched("coin", goldCoin);
+level.playerTouched("coin", bronzeCoin);
 
 if (level.noMoreActors("coin")) {
   console.log("Все монеты собраны");
@@ -207,7 +232,45 @@ if (obstacle) {
 }
 
 const otherActor = level.actorAt(player);
-console.log(otherActor); 
+console.log(otherActor);
 if (otherActor === fireball) {
   console.log("Пользователь столкнулся с шаровой молнией");
 }
+
+class LevelParser {
+  constructor(dictionary) {
+
+  }
+
+  actorFromSymbol(symbolOfLevel) {
+    let key = Object.keys(dictionary);
+    key.foreach(element => {
+      if (element = symbolOfLevel) {
+        return this.dictionary;
+      }
+      else return undefined;
+    });
+
+  }
+
+  obstacleFromSymbol(symbolOfLevel) {
+    switch (symbolOfLevel)
+    case 'x': return 'wall';
+      break;
+      case '!': return 'lava'
+        break;
+        defaults: return undefined;
+
+    }
+    createGrid() {
+
+    }
+    createActors() {
+
+    }
+
+    parse() {
+
+    }
+  }
+
