@@ -6,18 +6,7 @@ class Vector {
     this.y = y;
   }
   plus(vector) {
-    //   if (vector instanceof Vector) {
-    //     return new Vector(this.x + vector.x, this.y + vector.y);
-    //   } else {
-    //     throw new Error("Можно прибавлять к вектору только вектор типа Vector");
-    //   }
-    // }
-    // times(multiplier) {
-    //   return new Vector(this.x * multiplier, this.y * multiplier);
-    // }
-
-    // исправление1
-    if (!(vector instanceof Vector)) {
+        if (!(vector instanceof Vector)) {
       throw new Error("Можно прибавлять к вектору только вектор типа Vector");
     }
     return new Vector(this.x + vector.x, this.y + vector.y);
@@ -32,13 +21,6 @@ class Vector {
 // console.log(`Текущее расположение: ${finish.x}:${finish.y}`);
 
 class Actor {
-  // constructor(pos, size, speed) {
-  //   this.pos = pos || new Vector(0, 0);
-  //   this.size = size || new Vector(1, 1);
-  //   this.speed = speed || new Vector(0, 0);
-  // }
-
-  // исправление2
   constructor(
     pos = new Vector(0, 0),
     size = new Vector(1, 1),
@@ -72,20 +54,6 @@ class Actor {
   }
 
   isIntersect(actor) {
-    //   if (actor && actor instanceof Actor) {
-    //     if (actor === this) return false;
-    //     return actor.left <= this.left &&
-    //       actor.right >= this.right &&
-    //       actor.top <= this.top &&
-    //       actor.bottom >= this.bottom
-    //       ? false
-    //       : true;
-    //   } else {
-    //     throw new Error("Не является экземпляром класса Actor");
-    //   }
-    // }
-
-    // исправление3
     if (!(actor instanceof Actor)) {
       throw new Error("Не является экземпляром класса Actor");
     }
@@ -135,10 +103,8 @@ class Level {
   constructor(grid, actors) {
     this.grid = grid;
     this.actors = actors;
-    //this.player = { type: "player" };
     this.player = actors.find(item => item.type == "player"); // undefined: нет ни одного Actor с типом player
     this.height = grid.length;
-    //this.width = grid[0].length;
     this.width = grid.sort((a, b) => b.length - a.length);
     this.status = null;
     this.finishDelay = 1;
@@ -189,27 +155,18 @@ class Level {
   }
 
   playerTouched(typeObstacle, objCoin) {
-    //console.log(objCoin);
-    if (this.status) {
+     if (this.status) {
       return;
     }
-
     if (typeObstacle == "lava" || typeObstacle == "fireball") {
       this.status = "lost";
     }
-
     if (typeObstacle == "coin" && objCoin.prototype.type == "actor") {
-      //const index = this.actors.indexOf(objCoin);
-      //this.actors.splice(index, 1);
-      this.removeActor(objCoin);
+          this.removeActor(objCoin);
     }
-
     if (this.noMoreActors("coin")) this.status = "won";
 
-    // if (!this.actors.find(item => item.type == 'coin' )) {
-    //     this.status = 'won';
-    // }
-  }
+   }
 }
 
 // const grid = [[undefined, undefined], ["wall", "wall"]];
