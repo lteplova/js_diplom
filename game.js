@@ -57,7 +57,9 @@ class Actor {
     if (!(actor instanceof Actor)) {
       throw new Error('Не является экземпляром класса Actor');
     }
-    if (actor === this) return true;
+    if (actor === this) {
+      return true;
+    }
     if (
       actor.left >= this.left &&
       actor.right <= this.right &&
@@ -132,11 +134,18 @@ class Level {
         });
       });
 
-      if (this.height < pos.y + size.y) obstacle = 'lava';
-      if (this.width < pos.x + size.x) obstacle = 'wall';
-      if (this.height - (pos.y + size.y) < 0) obstacle = 'wall';
-      if (this.width - (pos.x + size.x) < 0) obstacle = 'wall';
-
+      if (this.height < pos.y + size.y) {
+        obstacle = 'lava';
+      }
+      if (this.width < pos.x + size.x) {
+        obstacle = 'wall';
+      }
+      if (this.height - (pos.y + size.y) < 0) {
+        obstacle = 'wall';
+      }
+      if (this.width - (pos.x + size.x) < 0) {
+        obstacle = 'wall';
+      }
       return obstacle;
     } else {
       throw new Error('Не является объектом Vector');
@@ -145,7 +154,9 @@ class Level {
 
   removeActor(actor) {
     this.actors.forEach((item, index, arr) => {
-      if (item === actor) arr.splice(index, 1);
+      if (item === actor) {
+        arr.splice(index, 1);
+      }
     });
   }
 
@@ -163,7 +174,9 @@ class Level {
     if (typeObstacle == 'coin' && objCoin.prototype.type == 'actor') {
       this.removeActor(objCoin);
     }
-    if (this.noMoreActors('coin')) this.status = 'won';
+    if (this.noMoreActors('coin')) {
+      this.status = 'won';
+    }
 
   }
 }
@@ -211,7 +224,9 @@ class LevelParser {
   actorFromSymbol(symbolOfLevel) {
         for (let i in this.dictionary) {
     
-      if (i === symbolOfLevel) return this.dictionary[i];
+      if (i === symbolOfLevel) {
+        return this.dictionary[i];
+      }
     }
     
   }
