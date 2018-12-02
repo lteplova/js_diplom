@@ -11,6 +11,10 @@ class Vector {
     }
     return new Vector(this.x + vector.x, this.y + vector.y)
   }
+
+  times(mult) {
+    return new Vector(this.x * mult, this.y * mult);
+  }
 }
 
 // const start = new Vector(30, 50);
@@ -26,6 +30,11 @@ class Actor {
     size = new Vector(1, 1),
     speed = new Vector(0, 0)
   ) {
+
+    if (!(pos instanceof Vector)) throw new Error('Позиция должна быть типа Vector');
+    if (!(size instanceof Vector)) throw new Error('Размер должен быть типа Vector');
+    if (!(speed instanceof Vector)) throw new Error('Скорость должна быть типа Vector');
+
     this.pos = pos
     this.size = size
     this.speed = speed
@@ -58,13 +67,13 @@ class Actor {
       throw new Error('Не является экземпляром класса Actor')
     }
     if (actor === this) {
-      return true
+      return false
     }
     if (
-      actor.left >= this.left &&
-      actor.right <= this.right &&
-      actor.top >= this.top &&
-      actor.bottom >= this.bottom
+        this.left < actor.right &&
+        this.right > actor.left &&
+        this.bottom > actor.top &&
+        this.top < actor.bottom
     ) {
       return true
     }
@@ -102,25 +111,27 @@ class Actor {
 // items.forEach(status);
 
 class Level {
-  constructor (grid, actors) {
-    this.grid = grid
-    this.actors = actors
-    this.player = actors.find(item => item.type == 'player') // undefined: нет ни одного Actor с типом player
-    this.height = grid.length
-    this.width = grid.sort((a, b) => b.length - a.length)
-    this.status = null
-    this.finishDelay = 1
+  constructor (grid = [], actors = []) {
+    this.grid = grid;
+    this.actors = actors;
+    this.player = actors.find(item => item.type == 'player');
+    this.height = grid.length;
+    this.width = this.grid.reduce((a, b) => {
+        return b.length > a ? b.length : a;
+    }, 0);
+    this.status = null;
+    this.finishDelay = 1;
   }
 
   isFinished () {
-    return this.status != null && finishDelay < 0
+    return this.status != null && this.finishDelay < 0
   }
 
   actorAt (actor) {
     if (!(actor instanceof Actor)) {
       throw new Error('Не является объектом Actor')
     }
-    this.actors.find(item => item.isIntersect(actor))
+    return this.actors.find(item => item.isIntersect(actor))
   }
 
   obstacleAt (pos, size) {
@@ -134,16 +145,16 @@ class Level {
         })
       })
 
-      if (this.height < pos.y + size.y) {
+      if (pos.y < 0 || this.height <= pos.y + size.y) {
         obstacle = 'lava'
       }
-      if (this.width < pos.x + size.x) {
+      if (pos.x < 0 || this.width <= pos.x + size.x) {
         obstacle = 'wall'
       }
-      if (this.height - (pos.y + size.y) < 0) {
+      if (pos.y < 0 || this.height - (pos.y + size.y) <= 0) {
         obstacle = 'wall'
       }
-      if (this.width - (pos.x + size.x) < 0) {
+      if (pos.x < 0 || this.width - (pos.x + size.x) <= 0) {
         obstacle = 'wall'
       }
       return obstacle
@@ -168,14 +179,19 @@ class Level {
     if (this.status) {
       return
     }
+
     if (typeObstacle == 'lava' || typeObstacle == 'fireball') {
       this.status = 'lost'
+      return
     }
-    if (typeObstacle == 'coin' && objCoin.prototype.type == 'actor') {
+
+    if (typeObstacle == 'coin') {
       this.removeActor(objCoin)
     }
-    if (this.noMoreActors('coin')) {
+    
+    if (this.noMoreActors(typeObstacle)) {
       this.status = 'won'
+      return
     }
   }
 }
