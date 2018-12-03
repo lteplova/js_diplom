@@ -220,7 +220,6 @@ describe('Класс Level', () => {
     it('Вернет строку lava если нижняя граница объекта выходит за пределы уровня', () => {
       const level = new Level(grid);
       const position = new Vector(0, gridSize);
-
       const wall = level.obstacleAt(position, size);
 
       expect(wall).to.be.equal('lava');
