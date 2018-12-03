@@ -416,8 +416,8 @@ class Coin extends Actor {
     const position = pos.plus(new Vector(0.2, 0.1));
     super(position, new Vector(0.6, 0.6));
     this.size = new Vector(0.6, 0.6);
-    this.startPos = pos;
-    this.pos = pos;
+    this.startPos = this.pos;
+    //this.pos = pos;
     // this.pos.x -= 0.2;
     // this.pos.y -= 0.1;
 
@@ -456,8 +456,8 @@ class Coin extends Actor {
 }
 
 class Player extends Actor {
-  constructor(pos) {
-    super(pos);
+  constructor(pos = new Vector(0.8, 1.5)) {
+    super(pos, new Vector(0.8, 1.5));
     this.pos.x = pos.x;
     this.pos.y = pos.y - 0.5;
     this.size = new Vector(0.8, 1.5);
