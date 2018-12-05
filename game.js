@@ -17,6 +17,7 @@ class Vector {
   }
 }
 
+
 // const start = new Vector(30, 50);
 // const moveTo = new Vector(5, 10);
 // const finish = start.plus(moveTo.times(2));
