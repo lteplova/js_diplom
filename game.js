@@ -146,10 +146,7 @@ class Level {
 
   //   определяет, остались ли еще объекты переданного типа на игровом поле
   noMoreActors(type) {
-    // у массиве есть метод, который проверяет наличие объекта по условию
-    // и возвращает true/false
-    return !this.actors.find(item => item.type == type);
-    //return this.actors.indexOf(type) == -1;
+    return !this.actors.some(item => item.type == type);
   }
 
   //   меняет состояние игрового поля при касании игроком каких-либо объектов или препятствий
@@ -158,14 +155,12 @@ class Level {
       return;
     }
 
-    // ===
-    if (typeObstacle == "lava" || typeObstacle == "fireball") {
+    if (typeObstacle === "lava" || typeObstacle === "fireball") {
       this.status = "lost";
       return;
     }
 
-    // ===
-    if (typeObstacle == "coin") {
+    if (typeObstacle === "coin") {
       this.removeActor(objCoin);
     }
 
@@ -176,20 +171,13 @@ class Level {
 }
 
 class LevelParser {
-  // лучше добавить значение по-умолчанию,
-  // чтобы не нужно было дальше проверять
-  constructor(dictionary) {
+  constructor(dictionary = {}) {
     this.dictionary = dictionary;
   }
 
   //   возвращает конструктор объекта по его символу, используя словарь
   actorFromSymbol(symbolOfLevel) {
-    // цикл лишний
-    for (let i in this.dictionary) {
-      if (i === symbolOfLevel) {
-        return this.dictionary[i];
-      }
-    }
+    return this.dictionary[symbolOfLevel];
   }
 
   //   возвращает строку, соответствующую символу препятствия
@@ -204,14 +192,11 @@ class LevelParser {
 
   //   преобразует массив строк в массив массивов
   createGrid(grid) {
-    // в этом методе лучше использвоать map
-    let result = [];
-    grid.forEach(item => {
+    return grid.map(item => {
       let row = [];
       item.split("").forEach(sym => row.push(this.obstacleFromSymbol(sym)));
-      result.push(row);
+      return row;
     });
-    return result;
   }
   // преобразует массив строк в массив движущихся объектов
   createActors(grid) {
@@ -222,8 +207,7 @@ class LevelParser {
         if (typeof res === "function") {
           const actor = new res(new Vector(x, y));
           if (actor instanceof Actor) {
-            // проверка в следующей строчке лишняя
-            actor && result.push(actor);
+            result.push(actor);
           }
         }
       });
@@ -239,23 +223,7 @@ class LevelParser {
 
 class Fireball extends Actor {
   constructor(pos = new Vector(0, 0), speed = new Vector(0, 0)) {
-    // форматирование
     super(pos, new Vector(1, 1), speed);
-    // pos, size, speed должны задаваться
-    // через вызов родительского конструктора
-    this.pos = pos;
-    this.speed = speed;
-    this._size = new Vector(1, 1);
-  }
-
-  // это свойство уже реализовано в родительском классе
-  get size() {
-    return this._size;
-  }
-
-  // это свойство уже реализовано в родительском классе
-  set size(size) {
-    this._size = size;
   }
 
   get type() {
@@ -264,11 +232,7 @@ class Fireball extends Actor {
 
   //   создает и возвращает вектор Vector следующей позиции шаровой молнии
   getNextPosition(time = 1) {
-    // здесь нужно использовать методы класса Vector
-    // непонятно зачем в рассчётах участвует размер
-    const newPosX = this.pos.x + time * this.speed.x + (this.size.x - 1);
-    const newPosY = this.pos.y + time * this.speed.y + (this.size.y - 1);
-    return new Vector(newPosX, newPosY);
+    return this.pos.plus(this.speed.times(time));
   }
 
   //   создает и возвращает вектор Vector следующей позиции шаровой молнии
@@ -290,11 +254,7 @@ class Fireball extends Actor {
 
 class HorizontalFireball extends Fireball {
   constructor(pos) {
-    super(pos);
-    // pos, size, speed должны задаваться через вызов родительского конструктора
-    this.pos = pos;
-    this.size = new Vector(1, 1);
-    this.speed = new Vector(2, 0);
+    super(pos, new Vector(2, 0));
   }
 
   act(time, level) {
@@ -305,11 +265,7 @@ class HorizontalFireball extends Fireball {
 
 class VerticalFireball extends Fireball {
   constructor(pos) {
-    super(pos);
-    // pos, size, speed должны задаваться через вызов родительского конструктора
-    this.pos = pos;
-    this.size = new Vector(1, 1);
-    this.speed = new Vector(0, 2);
+    super(pos, new Vector(0, 2));
   }
 
   act(time, level) {
@@ -322,10 +278,6 @@ class FireRain extends Fireball {
   constructor(pos) {
     super(pos, new Vector(0, 3));
     this.startPos = pos;
-    // pos, size, speed должны задаваться через вызов родительского конструктора
-    this.pos = pos;
-    this.size = new Vector(1, 1);
-    this.speed = new Vector(0, 3);
   }
 
   handleObstacle() {
@@ -380,16 +332,25 @@ class Coin extends Actor {
 
 class Player extends Actor {
   constructor(pos = new Vector(0.8, 1.5)) {
-    super(pos, new Vector(0.8, 1.5));
-    // не нужно менять свойства объекта Vector напрямую — используйте его методы
-    this.pos.x = pos.x;
-    this.pos.y = pos.y - 0.5;
-    // pos, size, speed должны задаваться через вызов родительского конструктора
-    this.size = new Vector(0.8, 1.5);
-    this.speed = new Vector(0, 0);
+    super(pos.plus(new Vector(0, -.5)), new Vector(0.8, 1.5));
   }
 
   get type() {
     return "player";
   }
 }
+
+
+const actorDict = {
+  '@': Player,
+  'o': Coin,
+  '=': HorizontalFireball,
+  '|': VerticalFireball,
+  'v': FireRain
+};
+
+const parser = new LevelParser(actorDict);
+
+loadLevels()
+  .then((res) => {runGame(JSON.parse(res), parser, DOMDisplay)
+  .then(() => alert('Вы выиграли!'))});
