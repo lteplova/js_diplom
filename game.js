@@ -294,7 +294,6 @@ class FireRain extends Fireball {
 }
 
 class Coin extends Actor {
-  // форматирование
   constructor(position = new Vector(0, 0)) {
     // лучше не менять значения аргументов функции
     const pos = position.plus(new Vector(0.2, 0.1));
