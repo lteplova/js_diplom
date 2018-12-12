@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 class Vector {
   constructor(x = 0, y = 0) {
@@ -10,7 +10,7 @@ class Vector {
   //   координаты которого будут суммой соответствующих координат суммируемых векторов.
   plus(vector) {
     if (!(vector instanceof Vector)) {
-      throw new Error("Можно прибавлять к вектору только вектор типа Vector");
+      throw new Error('Можно прибавлять к вектору только вектор типа Vector');
     }
     return new Vector(this.x + vector.x, this.y + vector.y);
   }
@@ -22,17 +22,6 @@ class Vector {
   }
 }
 
-<<<<<<< HEAD
-
-// const start = new Vector(30, 50);
-// const moveTo = new Vector(5, 10);
-// const finish = start.plus(moveTo.times(2));
-
-// console.log(`Исходное расположение: ${start.x}:${start.y}`);
-// console.log(`Текущее расположение: ${finish.x}:${finish.y}`);
-
-=======
->>>>>>> 66dbb5d7fe1424f7966a7e9749b3bb3ca479916a
 class Actor {
   constructor(
     pos = new Vector(0, 0),
@@ -40,13 +29,13 @@ class Actor {
     speed = new Vector(0, 0)
   ) {
     if (!(pos instanceof Vector)) {
-      throw new Error("Позиция должна быть типа Vector");
+      throw new Error('Позиция должна быть типа Vector');
     }
     if (!(size instanceof Vector)) {
-      throw new Error("Размер должен быть типа Vector");
+      throw new Error('Размер должен быть типа Vector');
     }
     if (!(speed instanceof Vector)) {
-      throw new Error("Скорость должна быть типа Vector");
+      throw new Error('Скорость должна быть типа Vector');
     }
 
     this.pos = pos;
@@ -73,13 +62,13 @@ class Actor {
   }
 
   get type() {
-    return "actor";
+    return 'actor';
   }
 
   //   проверяет, пересекается ли текущий объект с переданным объектом
   isIntersect(actor) {
     if (!(actor instanceof Actor)) {
-      throw new Error("Не является экземпляром класса Actor");
+      throw new Error('Не является экземпляром класса Actor');
     }
 
     if (actor === this) {
@@ -99,7 +88,7 @@ class Level {
   constructor(grid = [], actors = []) {
     this.grid = grid;
     this.actors = actors;
-    this.player = actors.find(item => item.type === "player");
+    this.player = actors.find(item => item.type === 'player');
     this.height = grid.length;
     this.width = this.grid.reduce((a, b) => {
       return b.length > a ? b.length : a;
@@ -116,7 +105,7 @@ class Level {
   //   в переданной позиции, и если да, вернёт этот объект
   actorAt(actor) {
     if (!(actor instanceof Actor)) {
-      throw new Error("Не является объектом Actor");
+      throw new Error('Не является объектом Actor');
     }
     return this.actors.find(item => item.isIntersect(actor));
   }
@@ -124,7 +113,7 @@ class Level {
   //   контролирует выход объекта за границы игрового поля
   obstacleAt(pos, size) {
     if (!(pos instanceof Vector) && !(size instanceof Vector)) {
-      throw new Error("Передан не вектор.");
+      throw new Error('Передан не вектор.');
     }
 
     const top = Math.floor(pos.y);
@@ -133,10 +122,10 @@ class Level {
     const right = Math.ceil(pos.x + size.x);
 
     if (left < 0 || right > this.width || top < 0) {
-      return "wall";
+      return 'wall';
     }
     if (bottom > this.height) {
-      return "lava";
+      return 'lava';
     }
 
     for (let y = top; y < bottom; y++) {
@@ -166,17 +155,17 @@ class Level {
       return;
     }
 
-    if (typeObstacle === "lava" || typeObstacle === "fireball") {
-      this.status = "lost";
+    if (typeObstacle === 'lava' || typeObstacle === 'fireball') {
+      this.status = 'lost';
       return;
     }
 
-    if (typeObstacle === "coin") {
+    if (typeObstacle === 'coin') {
       this.removeActor(objCoin);
     }
 
     if (this.noMoreActors(typeObstacle)) {
-      this.status = "won";
+      this.status = 'won';
     }
   }
 }
@@ -194,10 +183,10 @@ class LevelParser {
   //   возвращает строку, соответствующую символу препятствия
   obstacleFromSymbol(symbolOfLevel) {
     switch (symbolOfLevel) {
-      case "x":
-        return "wall";
-      case "!":
-        return "lava";
+      case 'x':
+        return 'wall';
+      case '!':
+        return 'lava';
     }
   }
 
@@ -205,7 +194,7 @@ class LevelParser {
   createGrid(grid) {
     return grid.map(item => {
       let row = [];
-      item.split("").forEach(sym => row.push(this.obstacleFromSymbol(sym)));
+      item.split('').forEach(sym => row.push(this.obstacleFromSymbol(sym)));
       return row;
     });
   }
@@ -213,9 +202,9 @@ class LevelParser {
   createActors(grid) {
     let result = [];
     grid.forEach((item, y) => {
-      item.split("").forEach((sym, x) => {
+      item.split('').forEach((sym, x) => {
         const res = this.actorFromSymbol(sym);
-        if (typeof res === "function") {
+        if (typeof res === 'function') {
           const actor = new res(new Vector(x, y));
           if (actor instanceof Actor) {
             result.push(actor);
@@ -238,7 +227,7 @@ class Fireball extends Actor {
   }
 
   get type() {
-    return "fireball";
+    return 'fireball';
   }
 
   //   создает и возвращает вектор Vector следующей позиции шаровой молнии
@@ -306,7 +295,6 @@ class FireRain extends Fireball {
 
 class Coin extends Actor {
   constructor(position = new Vector(0, 0)) {
-    // лучше не менять значения аргументов функции
     const pos = position.plus(new Vector(0.2, 0.1));
     super(pos, new Vector(0.6, 0.6));
     this.springSpeed = 8;
@@ -316,7 +304,7 @@ class Coin extends Actor {
   }
 
   get type() {
-    return "coin";
+    return 'coin';
   }
 
   // обновляет фазу подпрыгивания
@@ -346,6 +334,37 @@ class Player extends Actor {
   }
 
   get type() {
-    return "player";
+    return 'player';
   }
 }
+
+
+const schemas = [
+  [
+    '         ',
+    '         ',
+    '    =    ',
+    '       o ',
+    '     !xxx',
+    ' @       ',
+    'xxx!     ',
+    '         '
+  ],
+  [
+    '      v  ',
+    '    v    ',
+    '  v      ',
+    '        o',
+    '        x',
+    '@   x    ',
+    'x        ',
+    '         '
+  ]
+];
+const actorDict = {
+  '@': Player,
+  'v': FireRain
+}
+const parser = new LevelParser(actorDict);
+runGame(schemas, parser, DOMDisplay)
+  .then(() => console.log('Вы выиграли приз!'));
