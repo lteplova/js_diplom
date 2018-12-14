@@ -143,7 +143,10 @@ class Level {
   //   удаляет переданный объект с игрового поля,
   //   если такого объекта на игровом поле нет, не делает ничего
   removeActor(actor) {
-    this.actors.splice(this.actors.indexOf(actor), 1);
+    const indexArr = this.actors.indexOf(actor);
+    if (indexArr !== -1) {
+    this.actors.splice(indexArr, 1);
+    }
   }
 
   //   определяет, остались ли еще объекты переданного типа на игровом поле
@@ -291,7 +294,7 @@ class Coin extends Actor {
   updateSpring(number = 1) {
     this.spring += this.springSpeed * number;
   }
-  
+
   // создает и возвращает вектор подпрыгивания
   getSpringVector() {
     return new Vector(0, Math.sin(this.spring) * this.springDist);
