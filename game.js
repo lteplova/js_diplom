@@ -110,6 +110,7 @@ class Level {
     }
     return this.actors.find(item => item.isIntersect(actor));
   }
+
   //   определяет, нет ли препятствия в указанном месте,
   //   контролирует выход объекта за границы игрового поля
   obstacleAt(pos, size) {
@@ -191,15 +192,12 @@ class LevelParser {
 
   //   преобразует массив строк в массив массивов
   createGrid(grid) {
-    return grid.map(item => {
-      let row = [];
-      item.split("").forEach(sym => row.push(this.obstacleFromSymbol(sym)));
-      return row;
-    });
+    return grid.map(item => item.split("").map(sym => this.obstacleFromSymbol(sym)));
   }
+
   // преобразует массив строк в массив движущихся объектов
   createActors(grid) {
-    let result = [];
+    const result = [];
     grid.forEach((item, y) => {
       item.split("").forEach((sym, x) => {
         const res = this.actorFromSymbol(sym);
@@ -213,6 +211,7 @@ class LevelParser {
     });
     return result;
   }
+
   //   создает и возвращает игровое поле,
   //   заполненное препятствиями и движущимися объектами, полученными на основе символов и словаря
   parse(grid) {
@@ -255,22 +254,12 @@ class HorizontalFireball extends Fireball {
   constructor(pos = new Vector(0, 0)) {
     super(pos, new Vector(2, 0));
   }
-
-  // act(time, level) {
-  //   this.handleObstacle();
-  //   super.act(time, level);
-  // }
 }
 
 class VerticalFireball extends Fireball {
   constructor(pos = new Vector(0, 0)) {
     super(pos, new Vector(0, 2));
   }
-
-  // act(time, level) {
-  //   this.handleObstacle();
-  //   super.act(time, level);
-  // }
 }
 
 class FireRain extends Fireball {
@@ -282,19 +271,10 @@ class FireRain extends Fireball {
   handleObstacle() {
     this.pos = this.startPos;
   }
-
-  act(time, level) {
-    const newPos = this.getNextPosition(time);
-
-    if (level.obstacleAt(newPos, this.size)) {
-      this.handleObstacle();
-    }
-  }
 }
 
 class Coin extends Actor {
   constructor(position = new Vector(0, 0)) {
-    // лучше не менять значения аргументов функции
     const pos = position.plus(new Vector(0.2, 0.1));
     super(pos, new Vector(0.6, 0.6));
     this.springSpeed = 8;
@@ -311,6 +291,7 @@ class Coin extends Actor {
   updateSpring(number = 1) {
     this.spring += this.springSpeed * number;
   }
+  
   // создает и возвращает вектор подпрыгивания
   getSpringVector() {
     return new Vector(0, Math.sin(this.spring) * this.springDist);
@@ -355,6 +336,8 @@ const schemas = [
     '      v  ',
     '         ',
     '  v      ',
+    '         ',
+    '         ',
     '        o',
     '        x',
     '@   x    ',
